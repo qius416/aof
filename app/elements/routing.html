@@ -33,6 +33,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       app.menu = 'article';
     });
 
+    page('/editor', scrollToTop, function() {
+      app.route = 'editor';
+    });
+
     page('/blog/:genre', scrollToTop, function(data) {
       app.route = 'blog';
       app.menu = data.params.genre + 'blog';

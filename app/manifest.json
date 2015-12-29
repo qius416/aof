@@ -1,6 +1,6 @@
 {
-  "name": "Axiom-one",
-  "short_name": "Axiom I",
+  "name": "Polymer Starter Kit",
+  "short_name": "Polymer Starter Kit",
   "icons": [{
         "src": "images/touch/icon-128x128.png",
         "sizes": "128x128",
@@ -25,5 +25,5 @@
   "start_url": "/?homescreen=1",
   "background_color": "#3E4EB8",
   "display": "standalone",
-  "theme_color": "#FFFFFF"
+  "theme_color": "#2E3AA1"
 }

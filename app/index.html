@@ -55,7 +55,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 </head>
 
 <body unresolved class="fullbleed layout vertical">
-  
+  <span id="browser-sync-binding"></span>
   <template is="dom-bind" id="app">
     <paper-drawer-panel id="paperDrawerPanel" force-narrow>
       <!-- Drawer Scroll Header Panel -->
@@ -95,12 +95,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             <iron-icon icon="axiom-icons:build"></iron-icon>
             <h4>Labratory</h4>
           </a>
+          <a data-route="editor" href="/editor" on-click="onDataRouteClick">
+            <iron-icon icon="axiom-icons:create"></iron-icon>
+            <h4>Editor</h4>
+          </a>
         </paper-menu>
       </paper-scroll-header-panel>
 
       <!-- Main Area -->
       <!--<paper-scroll-header-panel main condenses keep-condensed-header>-->
-      <paper-scroll-header-panel id="scrollHeader" main condenses keep-condensed-header >
+      <paper-scroll-header-panel id="scrollHeader" main condenses keep-condensed-header>
         <!-- Main Toolbar -->
         <paper-toolbar id="mainToolbar" class="tall">
           <paper-icon-button id="paperToggle" icon="axiom-icons:menu" paper-drawer-toggle></paper-icon-button>
@@ -142,14 +146,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <iron-pages attr-for-selected="data-route" selected="{{route}}">
             <section data-route="home">
               <section class="slogan layout horizontal wrap center-center start-justified">
-                  <h1>Wir müssen wissen,</h1>
-                  <h1>Wir werden wissen.</h1>
+                <h1>Wir müssen wissen,</h1>
+                <h1>Wir werden wissen.</h1>
               </section>
               <section hero class="subtitle">
                 <h4 class="name">Lovely Web Developer</h4>
               </section>
               <section class="layout horizontal center-center">
-                  <a href="/about"><paper-fab class="mypic" src="images/me.png"></paper-fab></a>
+                <a href="/about">
+                  <paper-fab class="mypic" src="images/me.png"></paper-fab>
+                </a>
               </section>
               <section class="content">
                 <recommend-list></recommend-list>
@@ -182,6 +188,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
             <section data-route="about">
               <about-me></about-me>
+            </section>
+
+            <section data-route="editor">
+              <blog-editor></blog-editor>
             </section>
           </iron-pages>
         </div>
