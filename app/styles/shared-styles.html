@@ -1,0 +1,97 @@
+<!-- shared styles for all elements and index.html -->
+<dom-module id="shared-styles">
+  <template>
+    <style>
+
+      h1, h2, h3, h4, h5, h6 { font-weight: 400; margin: 0px; padding: 0px; line-height: 1em;text-align: center; }
+
+      h1, h3, h5 { font-family: 'Black Ops One', cursive; }
+
+      h1 { font-size: 50px;}
+
+      h2 { color: #585e62; font-size: 35px;}
+
+      h3 { font-size: 25px; margin: 15px 0px; }
+
+      h4 { font-size: 18px; }
+
+      p {font-size: 18px; }
+
+      a, a:active, a:visited, a:focus { color: #585e62; text-decoration: none; }
+
+      a:hover { color: #585e62; text-decoration: underline; }
+
+      paper-tab[link] a {
+        color:inherit;
+        background-color: inherit;
+        text-align: center;
+        margin: 0;
+        padding: 0;
+        height: auto;
+      }
+
+      hr {
+        width: 80%;
+        border: 0;
+        height: 2px;
+        color: var(--divider-color);
+        background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0));
+      }
+
+      paper-button.primary, paper-button.btn-primary, paper-button[primary] { color: #3d6868; }
+      paper-button.primary[raised], paper-button.btn-primary[raised], paper-button[primary][raised] { background-color: #3d6868; color: #fff; }
+      paper-button.secondary, paper-button.btn-secondary, paper-button[secondary] { color: #40957f; }
+      paper-button.secondary[raised], paper-button.btn-secondary[raised], paper-button[secondary][raised] { background-color: #40957f; color: #fff; }
+      paper-button.success, paper-button.btn-success, paper-button[success] { color: #a7c686; }
+      paper-button.success[raised], paper-button.btn-success[raised], paper-button[success][raised] { background-color: #a7c686; color: #323b28; }
+      paper-button.info, paper-button.btn-info, paper-button[info] { color: #3c515d; }
+      paper-button.info[raised], paper-button.btn-info[raised], paper-button[info][raised] { background-color: #3c515d; color: #fff; }
+      paper-button.warning, paper-button.btn-warning, paper-button[warning] { color: #fadd60; }
+      paper-button.warning[raised], paper-button.btn-warning[raised], paper-button[warning][raised] { background-color: #fadd60; color: #4b421d; }
+      paper-button.error, paper-button.btn-error, paper-button[error] { color: #ff7043; }
+      paper-button.error[raised], paper-button.btn-error[raised], paper-button[error][raised] { background-color: #ff7043; color: #4d2214; }
+      paper-button.link, paper-button.btn-link, paper-button[link] { text-decoration: underline; }
+      paper-button[raised] { color: #585e62; }
+      paper-button[disabled] { color: #274c4c !important; background: #a2d0d0 !important; }
+
+      h2.elheader {
+        font-family: 'Play', sans-serif;
+        font-weight: bolder;
+      }
+
+      paper-spinner.loading {
+        margin-bottom: 20px;
+      }
+
+      .copyright {
+        text-align: center;
+        padding: 2% 0% 1% 0%;
+        font-size: 14px;
+        letter-spacing: 1px;
+        opacity: .8;
+      }
+      img {
+        width:500px;
+        height: auto;
+      }
+      @media (max-width: 600px) {
+        h1 { font-size: 30px;}
+        h2 { font-size: 25px;}
+        h3 { font-size: 20px; margin: 5px 0px; }
+        h4 { font-size: 16px; }
+        p {font-size: 16px; }
+        img {width:300px;}
+      }
+
+      @media (max-width: 400px) {
+        h1 { font-size: 22px;}
+        h2 { font-size: 18px;}
+        h3 { font-size: 16px; margin: 0px; }
+        h4 { font-size: 14px; }
+        p {font-size: 12px; }
+        img {width:300px;}
+      }
+
+    </style>
+  </template>
+</dom-module>

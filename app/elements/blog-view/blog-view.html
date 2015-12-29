@@ -1,0 +1,175 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="..\..\bower_components/polymer/polymer.html">
+
+<dom-module id="blog-view">
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: block;
+        background: linear-gradient(to right, hsl(66, 45%, 80%) 0%, hsl(66, 45%, 91%) 5%, hsl(66, 45%, 91%) 95%, hsl(66, 45%, 80%) 100%);
+        padding: 50px 8% 10px 8%;
+      }
+      div.container {
+        margin: 30px 0 30px 0;
+      }
+      h1 {
+        font-family: 'Architects Daughter', cursive;
+        text-decoration: underline;
+        text-transform: capitalize;
+        text-align: center;
+        margin-bottom: 50px;
+      }
+      h2,h3,h4,h5,h6 {
+        font-family: 'Architects Daughter', cursive;
+        text-align: left;
+        text-transform: capitalize;
+      }
+      p,span{
+        font-family: 'Architects Daughter', cursive;
+      }     
+      div.buttons {
+        margin-bottom: 30px;
+      }
+      div.header h2{
+        padding-right: 30px;
+      }
+      div.header iron-icon:hover{
+        cursor:pointer;
+      }
+    </style>
+    <h1>{{title}}</h1>
+    <template id="repeater" is="dom-repeat" items="[[data]]">
+      <div class="container">
+        <div class="header layout horizontal center">
+          <h2 data-dialog="{{index}}">[[item.key]]</h2>
+          <iron-icon data-collpase="[[index]]" on-click="showDetail" icon="axiom-icons:down"></iron-icon>
+        </div>
+        <iron-collapse id="collapse[[index]]">
+          <template is="dom-repeat" items="{{item.contents}}" as="content">
+            <template is="dom-if" if="{{content.isP}}">
+              <p>[[content.content]]</p>
+            </template>
+            <template is="dom-if" if="{{content.isImage}}">
+              <img src="[[content.content]]"/>
+            </template>
+          </template>
+        </iron-collapse>
+      </div>
+    </template>
+    <div class="buttons layout vertical center">
+      <paper-spinner class="loading" active$="[[loading]]"></paper-spinner>
+      <paper-button class="primary" raised disabled="{{!loadable}}" on-click="loadMore">load more</paper-button>
+    </div>
+    <div class="copyright">© 2015 Axiom One</div>
+    <iron-ajax id="api" url="/api/blog" last-response="{{response}}" handle-as="json" debounce-duration="300"></iron-ajax>
+  </template>
+  <script>
+    (function() {
+      'use strict';
+      /* globals moment*/
+      Polymer({
+        is: 'blog-view',
+
+        properties: {
+          category: {
+            type: String,
+            observer: 'fetchData'
+          },
+          title: String,
+          response: {
+            type: Object,
+            observer: 'extract'
+          },
+          loading:{
+            type:Boolean,
+            value:false
+          },
+          data: {
+            type: Array,
+            value: []
+          },
+          loadable: {
+            type: Boolean,
+            value: false
+          },
+          startKey: {
+            type: String,
+            computed: 'getLastKey(response)'
+          }
+        },
+        showDetail: function(e) {
+          var id = e.target.dataCollpase;
+          var detail = Polymer.dom(this.root).querySelector('#collapse'+id);
+          e.target.icon = detail.opened?'axiom-icons:down':'axiom-icons:up';
+          detail.toggle();
+        },
+        extract: function(response) {
+          if (response.rows.length > 0) {
+            response.rows.forEach(function(el, index) {
+              var data = {};
+              data.index = index;
+              data.status = 'closed';
+              if(this.category === 'work'){
+                data.key = el.id;
+              }else{
+                var d = moment(el.id);
+                if (moment().diff(d, 'days') > 14) {
+                  data.key = d.format('dddd, MMM Do YYYY');
+                } else {
+                  data.key = d.fromNow();
+                }
+              }
+              data.contents=[];
+              el.value.forEach(function(row){
+                var r = {};
+                if(row[0]==='img'){
+                  r.isImage = true;
+                }else{
+                  r.isP = true;
+                }
+                r.content = row[1];
+                data.contents.push(r);
+              });
+              this.push('data', data);
+            }, this);
+            this.loadable = true;
+          } else {
+            this.loadable = false;
+          }
+          this.loading = false;
+        },
+        getLastKey: function(response) {
+          var count = response.rows.length;
+          if (count > 0) {
+            return response.rows[count - 1].key;
+          }
+          return this.startKey;
+        },
+        fetchData: function(category) {
+          this.title = this.category + ' Logs';
+          this.data = [];
+          this.$.api.params = {};
+          this.$.api.params.type = category;
+          this.$.api.params.num = 10;
+          this.$.api.generateRequest();
+          this.loading = true;
+        },
+        loadMore: function() {
+          this.loading = true;
+          this.loadable = false;
+          this.$.api.params.startkey = this.startKey;
+          this.$.api.generateRequest();
+        }
+      });
+    })();
+  </script>
+</dom-module>

@@ -1,0 +1,108 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="..\..\bower_components/polymer/polymer.html">
+
+<dom-module id="article-list">
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: block;
+        font-family: 'Play', sans-serif;
+        padding: 60px 6% 30px 6%;
+      }
+      h2 {
+        margin: 20px 0 50px 0;
+      }
+      h3 {
+        margin-top: 10px;
+        text-align: left;
+        text-decoration: underline;
+        text-transform: capitalize;
+      }
+      div.abstract{
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        margin-bottom: 30px;
+      }
+    </style>
+    <h2 class="elheader">Article Explorer</h2>
+    <template id="repeater" is="dom-repeat" items="[[data]]">
+      <a href="/article/content/[[item.title]]">
+        <h3>[[item.title]]</h3>
+        <div class="abstract">[[item.abstract]]</div>
+      </a>
+    </template>
+    <div class="layout vertical center-center">
+      <paper-spinner class="loading" active$="[[loading]]"></paper-spinner>
+      <paper-button class="primary" raised disabled="{{!loadable}}" on-click="loadMore">load more</paper-button>
+    </div>
+    <iron-ajax id="api" url="/api/article" last-response="{{response}}" handle-as="json" debounce-duration="300"></iron-ajax>
+  </template>
+  <script>
+    (function() {
+      'use strict';
+      Polymer({
+        is: 'article-list',
+        properties: {
+          num: Number,
+          response: {
+            type: Object,
+            observer: 'extract'
+          },
+          data: {
+            type: Array,
+            value: []
+          },
+          loadable: {
+            type: Boolean,
+            value: false
+          },
+          loading:{
+            type:Boolean,
+            value:false
+          },
+          startKey: String,
+          startkeyDocid: String
+        },
+        extract: function(response) {
+          if (response.rows.length > 0) {
+            response.rows.forEach(function(el) {
+              var item = {};
+              item.title = el.value[0];
+              item.abstract = el.value[1];
+              this.push('data', item);
+            }, this);
+            this.loadable = true;
+            this.startKey = response.rows[response.rows.length - 1].key;
+            this.startkeyDocid = response.rows[response.rows.length - 1].id;
+          } else {
+            this.loadable = false;
+          }
+          this.loading = false;
+        },
+        ready: function() {
+          this.loading = true;
+          this.$.api.params = {};
+          this.$.api.params.num = this.num;
+          this.$.api.generateRequest();
+        },
+        loadMore: function() {
+          this.loading = true;
+          this.loadable = false;
+          this.$.api.params.startkey = this.startKey;
+          this.$.api.params.startkeyDocid = this.startkeyDocid;
+          this.$.api.generateRequest();
+        }
+      });
+    })();
+  </script>
+</dom-module>

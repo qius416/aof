@@ -1,0 +1,158 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="..\..\bower_components/polymer/polymer.html">
+
+<dom-module id="about-me">
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: block;
+        font-family: 'Audiowide', cursive;
+        margin:40px 0 10px 0;
+        --iron-icon-height: 4em;
+        --iron-icon-width: 4em;
+        --paper-dialog-title: {
+          color:#3d6868;
+          font:bold 2em 'Architects Daughter', cursive;
+        }
+        --paper-input-container-label: {
+          color:#3d6868;
+          font:bold 1.3em 'Arvo', serif;
+        }
+        --paper-input-container-input: {
+          font:600 1.2em 'Play', sans-serif;
+        }
+      }
+      .deco::first-letter {
+        color: #afd0d0;
+        font-size: 1.6em;
+      }
+      paper-dialog{
+        background-color: #f0f2dd;
+        background-image: url('/images/intro.jpg');
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center center;
+        font-family: 'Black Ops One', cursive;
+      }
+      @media (min-width: 600px) {
+        paper-dialog{
+          width: 500px;
+        }
+      }
+      div.multi{
+        height: 100px;
+      }
+      div.main {
+        padding: 30px 6% 30px 6%;
+        font:600 1.2em 'Play', sans-serif;
+      }
+      .main h2 {
+        text-align: left;
+        text-decoration: underline;
+        text-transform: capitalize;
+      }
+      .main h2::before{
+        content: '∾ ';
+      }
+    </style>
+    <h1>Introduction</h1>
+    <div class="main">
+      <template id="itemlist" is="dom-repeat" items="{{info.contents}}">
+        <template is="dom-if" if="{{item.p}}">
+          <p>{{item.content}}</p>
+        </template>
+        <template is="dom-if" if="{{item.h}}">
+          <h2>{{item.content}}</h2>
+        </template>
+      </template>
+    </div>
+    <div class="action layout horizontal center-center wrap">
+      <paper-button raised id="message" class="secondary function" on-click="dialog">Leave me a Message</paper-button>
+      <span class="deco">OR</span>
+      <a href="mailto:qius416@gmail.com">
+        <iron-icon icon="axiom-icons:mail" style="color: #40957f;"></iron-icon>
+        <span class="function">qius416@gmail.com</span>
+      </a>
+    </div>
+    <paper-dialog id="dialog" entry-animation="scale-up-animation" exit-animation="fade-out-animation">
+      <h2>hello there</h2>
+      <paper-input id="name" auto-validate required error-message="Name field is required." label="Name" maxlength="50"></paper-input>
+      <gold-email-input id="email" auto-validate error-message="Please input valid email address" required label="Email"></gold-email-input>
+      <paper-dialog-scrollable>
+        <div class="multi">
+          <paper-textarea id="info" auto-validate error-message="Please input your issue(s)." label="Message" required maxlength="1500"></paper-textarea>
+        </div>
+      </paper-dialog-scrollable>
+      <div class="buttons">
+        <paper-button dialog-dismiss>Cancel</paper-button>
+        <paper-button id="sub" dialog-confirm on-click="submit">Submit</paper-button>
+      </div>
+    </paper-dialog>
+    <paper-toast id="toast"></paper-toast>
+    <iron-ajax id="post" url="/api/about" content-type="application/json" on-error="handleError" on-response="handleResponse" method="POST" handle-as="json" debounce-duration="5000"></iron-ajax>
+    <iron-ajax id="api" auto url="/api/about" last-response="{{info}}" method="GET" handle-as="json" debounce-duration="1000"></iron-ajax>
+    <div class="copyright">© 2015 Axiom One</div>
+  </template>
+  <script>
+    (function() {
+      'use strict';
+
+      Polymer({
+        is: 'about-me',
+        properties: {
+          info: {
+            type: Object,
+            value: 'intro-about'
+          },
+          messages: {
+            type:Object,
+            value: {
+              err1:'Sorry, somehow message cannot be sent. Please try it later.',
+              err2:'Please check your input.',
+              success:'Thank you for contact! your message has been delivered.'
+            }
+          }
+        },
+        handleError:function(){
+          this.$.toast.text = this.messages.err1;
+          this.$.toast.show();
+          this.$.sub.disabled = false;
+        },
+        dialog: function() {
+          this.$.dialog.toggle();
+        },
+        submit: function() {
+          if (!this.$.name.validate() || !this.$.email.validate() || !this.$.info.validate()) {
+            this.$.toast.text = this.messages.err2;
+            this.$.toast.show();
+          } else {
+            var params = {};
+            params.name = this.$.name.value;
+            params.email = this.$.email.value;
+            params.message = this.$.info.value;
+            this.$.post.body = params;
+            this.$.post.generateRequest();
+            this.$.sub.disabled = true;
+          }
+        },
+        handleResponse: function() {
+          this.$.name.value = '';
+          this.$.email.value = '';
+          this.$.info.value = '';
+          this.$.sub.disabled = false;
+          this.$.toast.text = this.messages.success;
+          this.$.toast.show();
+        }
+      });
+    })();
+  </script>
+</dom-module>

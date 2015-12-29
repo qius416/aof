@@ -1,0 +1,91 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="..\..\bower_components/polymer/polymer.html">
+
+<dom-module id="recommend-list">
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: block;
+        font-family: 'Play', sans-serif;
+        padding-top: 30px;
+      }
+      div.container {
+        padding:30px 7% 0 7%;
+      }
+      h3 {
+        text-align: left;
+        text-decoration: underline;
+        text-transform: capitalize;
+      }
+      p.abstract::after{
+        content:'  . .'
+      }
+    </style>
+    <h2 class="elheader">Articles</h2>
+    <hr>
+    <div class="container layout horizontal center-center">
+      <paper-spinner class="hint" active$="[[loading]]"></paper-spinner>
+    </div>
+    <template id="repeater" is="dom-repeat" items="[[data]]">
+      <div class="container">
+        <a href="/article/content/[[item.id]]">
+          <h3>[[item.title]]</h3>
+          <p class="abstract">[[item.abstract]]</div>
+        </a>
+      </div>
+    </template>
+    <div hidden$="[[loading]]" class="container layout horizontal end-justified">
+      <a href="/article">
+        <paper-button>more...</paper-button>
+      </a>
+    </div>
+    <iron-ajax id="api" url="/api/article" last-response="{{response}}" handle-as="json" debounce-duration="300"></iron-ajax>
+  </template>
+  <script>
+    (function() {
+      'use strict';
+      Polymer({
+        is: 'recommend-list',
+        properties: {
+          response: {
+            type: Object,
+            observer: 'extract'
+          },
+          data: {
+            type: Array,
+            value: []
+          },
+          loading:{
+            type:Boolean,
+            value:true
+          }
+        },
+        extract: function(response) {
+          response.rows.forEach(function(el,idx) {
+            var item = {};
+            item.index = idx;
+            item.id = el.id;
+            item.title = el.value[0];
+            item.abstract = el.value[1];
+            this.push('data', item);
+          }, this);
+          this.loading = false;
+        },
+        ready: function() {
+          this.$.api.params = {};
+          this.$.api.params.num = 3;
+          this.$.api.generateRequest();
+        }
+      });
+    })();
+  </script>
+</dom-module>

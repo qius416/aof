@@ -1,0 +1,222 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<style is="custom-style">
+
+  /*
+   Polymer includes a shim for CSS Custom Properties that we can use for application theming.
+   Below, you'll find the default palette for the Polymer Starter Kit layout. Feel free to play
+   with changing the colors used or generate your own palette of colours at MaterialPalette.com.
+
+   See https://www.polymer-project.org/1.0/docs/devguide/styling.html#xscope-styling-details
+   for further information on custom CSS properties.
+   */
+
+  /* Application theme */
+
+  :root {
+    --dark-primary-color: #3d6868;
+    --default-primary-color: #3d6868;
+    --light-primary-color: #c5cae9;
+    --text-primary-color: #ffffff;
+    --accent-color: #ff4081;
+    --primary-background-color: #ffffff;
+    --secondary-background-color: #f0f2dd;
+    --hero-background-color: #dbe9d6;
+    --primary-text-color: #585e62;
+    --secondary-text-color: #585e62;
+    --disabled-text-color: #274c4c;
+    --divider-color: #e0e0e0;
+
+    /* Components */
+
+    /* paper-drawer-panel */
+    --drawer-border-color: 1px solid #ccc;
+    --drawer-toolbar-border-color: 1px solid rgba(0, 0, 0, 0.22);
+
+    /* paper-menu */
+    --paper-menu-background-color: #dbe9d6;
+    --paper-menu-color: #585e62;
+    --paper-menu-disabled-color: #a2d0d0;
+    --menu-link-color: #585e62;
+
+    /* paper-spiner */
+    --paper-spinner-layer-1-color: #3d6868; 
+    --paper-spinner-layer-2-color: #3d6868;
+    --paper-spinner-layer-3-color: #3d6868;
+    --paper-spinner-layer-4-color: #3d6868;
+
+    /* paper-fab */
+    --paper-fab-background: #3d6868;
+    --paper-fab-disabled-background: #a2d0d0;
+    --paper-fab-disabled-text: #274c4c;
+
+    /* paper-tab */
+    --paper-tabs-selection-bar-color: #FF9800;
+    --paper-tab-ink: #40957f;
+    --paper-tab:{
+      text-indent: 8px;
+      font-size: 16px;
+      font-family: 'Black Ops One', cursive;
+      background-color: #3d6868;
+      color: #ffffff;
+    }
+  }
+
+  /* General styles */
+
+  html { -ms-text-size-adjust: 100%; -webkit-text-size-adjust: 100%; font-size: 16px; }
+
+  html, body { margin: 0px; padding: 0px; min-height: 100%; color: #585e62; background-color: #f0f2dd; font-family: 'Play', sans-serif; font-weight: 400; }
+
+  section[hero] { background-color: #dbe9d6; }
+
+  #drawerToolbar {
+    color: var(--secondary-text-color);
+    background-color: var(--secondary-background-color);
+    border-bottom: var(--drawer-toolbar-border-color);
+  }
+
+  paper-scroll-header-panel {
+    height: 100%;
+    background-color: var(--secondary-background-color);
+  }
+
+  paper-menu iron-icon {
+    margin-right: 33px;
+    opacity: 0.7;
+  }
+
+  .paper-menu > .iron-selected {
+    color: var(--default-primary-color);
+  }
+
+  paper-menu a {
+    text-decoration: none;
+    color: var(--menu-link-color);
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    -ms-flex-direction: row;
+    -webkit-flex-direction: row;
+    flex-direction: row;
+    -ms-flex-align: center;
+    -webkit-align-items: center;
+    align-items: center;
+    font-family: 'Black Ops One', cursive;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 24px;
+    min-height: 48px;
+    padding: 0 16px;
+  }
+
+  .app-name {
+    font-size: 40px;
+    font-weight: 300;
+    /* Required for main area's paper-scroll-header-panel custom condensing transformation */
+    -webkit-transform-origin: left center;
+    transform-origin: left center;
+    font-family: 'Audiowide', cursive;
+  }
+
+  .app-name::first-letter {
+    color: #afd0d0;
+    font-size: 55px;
+  }
+
+  #mainToolbar .middle-container  {
+    height: 100%;
+    margin-left: 48px;
+  }
+
+  #mainToolbar .bottom {
+    /* Required for main area's paper-scroll-header-panel custom condensing transformation */
+    -webkit-transform-origin: left center;
+    transform-origin: left center;
+  }
+
+  section[data-route='home']>section.content {
+    background-color: #f2f2f2;
+  }
+
+  footer {
+    padding: 60px 0 10px 0;
+    background: linear-gradient(to bottom, #f0f2dd, #ffffff);
+  }
+
+  div.about {
+    margin-top: 20px;
+    font-family: 'Black Ops One', cursive;
+  }
+
+  .slogan {
+    padding: 50px 0 50px 0;
+    font-family: 'Black Ops One', cursive;
+  }
+
+  .subtitle {
+    padding: 1%;
+    margin: 10px 0 0 0;
+  }
+
+  paper-fab.mypic {
+    --iron-icon-height: 80px;
+    --iron-icon-width: 80px;
+    margin: 40px;
+  }
+
+  h4.name{
+    font-weight: 600;
+    font-family: 'Play', sans-serif;
+    color: var(--default-primary-color);
+  }
+
+  text.mathball{
+    font-family: 'Play', sans-serif;
+  }
+  text.digit.t1{
+    font-family: 'Audiowide', cursive;
+    fill:#3d6868;
+  }
+  text.digit.t0{
+     font-family: 'Audiowide', cursive;
+    fill:#40957f;
+  }
+  g.node:hover,text.digit:hover{
+    cursor: pointer;
+  }
+
+  /* Breakpoints */
+
+  /* Small */
+  @media (max-width: 600px) {
+    paper-toolbar.tall .app-name {
+      font-size: 24px;
+      font-weight: 400;
+    }
+    .app-name::first-letter {
+      font-size: 35px;
+    }
+  }
+
+  @media (max-width: 400px) {
+    paper-toolbar.tall .app-name {
+      font-size: 20px;
+      font-weight: 400;
+    }
+    .app-name::first-letter {
+      font-size: 35px;
+    }
+  }
+
+</style>
