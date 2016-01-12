@@ -1,0 +1,243 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="..\..\bower_components/polymer/polymer.html">
+
+<dom-module id="blog-editor">
+  <template>
+    <style include="shared-styles"></style>
+    <style>
+      :host {
+        display: block;
+        padding: 3%;
+      }
+
+      div#btn {
+        margin-top: 2%;
+        margin-bottom: 3%;
+      }
+
+      paper-input.header {
+        --paper-input-container: {
+          font-size: 30px;
+          font-weight: bold;
+        }
+      }
+
+      paper-input.title {
+        --paper-input-container: {
+          font-size: 35px;
+          font-weight: bold;
+          text-align: center;
+        }
+      }
+    </style>
+    <paper-material id="content" elevation="1">
+      <paper-input id="title" label="title" value="{{title}}" disabled$="checkTitle"></paper-input>
+      <template is="dom-repeat" items="{{post}}">
+        <template is="dom-if" if="{{item.img}}">
+          <image-uploader src="{{item.content}}"></image-uploader>
+        </template>
+        <template is="dom-if" if="{{item.text}}">
+          <paper-textarea label="paragraph" value="{{item.content}}"></paper-textarea>
+        </template>
+        <template is="dom-if" if="{{item.header}}">
+          <paper-dropdown-menu label="type" selected-item-label={{item.tag}}>
+            <paper-menu class="dropdown-content">
+              <paper-item>h1</paper-item>
+              <paper-item>h2</paper-item>
+              <paper-item>h3</paper-item>
+              <paper-item>h4</paper-item>
+              <paper-item>h5</paper-item>
+              <paper-item>h6</paper-item>
+              <paper-item>hr</paper-item>
+            </paper-menu>
+          </paper-dropdown-menu>
+          <paper-input label="header" value="{{item.content}}"></paper-input>
+        </template>
+        <div>
+          <paper-button id="{{index}}" raised on-click="remove">delete</paper-button>
+        </div>
+      </template>
+    </paper-material>
+    <section hero>
+      <div id="btn" class="layout horizontal center-center wrap">
+        <paper-input id="createDate" value="{{date}}" type="date"></paper-input>
+        <paper-button raised on-click="addText">add text</paper-button>
+        <paper-button raised id="addHeader" disabled on-click="addHeader">add header</paper-button>
+        <paper-button raised on-click="addPicture">add picture</paper-button>
+        <paper-button raised on-click="addTable">add table</paper-button>
+        <paper-dropdown-menu label="Category" selected-item-label={{category}}>
+          <paper-menu class="dropdown-content">
+            <paper-item>article</paper-item>
+            <paper-item>math</paper-item>
+            <paper-item>training</paper-item>
+            <paper-item>work</paper-item>
+          </paper-menu>
+        </paper-dropdown-menu>
+        <paper-dropdown-menu id="articleType" disabled label="type" selected-item-label={{articleType}}>
+          <paper-menu class="dropdown-content">
+            <paper-item label="math">math</paper-item>
+            <paper-item label="science">science</paper-item>
+            <paper-item label="health">health</paper-item>
+            <paper-item label="it">it</paper-item>
+            <paper-item label="etc">etc</paper-item>
+          </paper-menu>
+        </paper-dropdown-menu>
+      </div>
+      <div>
+        <paper-toggle-button id="finished">publish</paper-toggle-button>
+        <paper-button id="submit" raised on-click="upload">Submit</paper-button>
+      </div>
+    </section>
+    <paper-toast id="toast" text=""></paper-toast>
+    <iron-ajax id="api" url="/api/blog" content-type="application/json" on-error="handleError"
+                        timeout="60000" method = "POST" handle-as="json" on-response="handleResponse"></iron-ajax>
+  </template>
+  <script>
+    (function() {
+      'use strict';
+
+      Polymer({
+        is: 'blog-editor',
+        properties: {
+          title:String,
+          category: {
+            type: String,
+            observer: 'typeChanged'
+          },
+          articleType: String,
+          index: {
+            type: Number,
+            value: 0
+          },
+          date:{
+            type:Date,
+            value: function(){
+              return new Date();
+            }
+          },
+          post: {
+            type:Array,
+            value:[]
+          }
+        },
+        checkTitle:function(){
+          if(this.category === 'article' || this.category === 'work'){
+            return true;
+          }else{
+            return false;
+          }
+        },
+        remove:function(e){
+          this.splice('post', e.target.id, 1);
+        },
+        upload:function(){
+          var params = {};
+          var date = JSON.parse(JSON.stringify(new Date(this.$.createDate.value)));
+          params.contents = [];
+          params._id = this.title;
+          if(this.category==='article'){
+            params._id = this.title;
+            params.type = 'article';
+            params.createDate = date;
+            params.category = this.articleType;
+          }else{
+            if(this.category === 'work'){
+              params._id = this.title;
+            }else{
+              params._id = date;
+            }
+            params.type = 'blog';
+            params.category = this.category;
+          }
+          params.finished = this.$.finished.active;
+          this.post.forEach(function(el){
+            params.contents.push([el.tag,el.content]);
+          }, this);
+          this.$.api.body = params;
+          this.$.api.generateRequest();
+          this.$.submit.toggleAttribute('disabled', true);
+        },
+        handleResponse:function(err,data){
+          this.$.submit.toggleAttribute('disabled', false);
+          this.$.toast.text = 'Data inserted' + data;
+          this.$.toast.show();
+        },
+        handleError:function(err){
+          this.$.submit.toggleAttribute('disabled', false);
+          this.$.toast.text = 'insert Failed:' + err;
+          this.$.toast.show();
+        },
+        typeChanged: function(newVal) {
+          if (newVal === 'article') {
+            //Polymer.dom(this.$.createDate).removeAttribute('disabled')
+            this.$.createDate.toggleAttribute('disabled', true);
+            this.$.addHeader.toggleAttribute('disabled', false);
+            this.$.articleType.toggleAttribute('disabled', false);
+          } else {
+            this.$.createDate.toggleAttribute('disabled', false);
+            this.$.addHeader.toggleAttribute('disabled', true);
+            this.$.articleType.toggleAttribute('disabled', true);
+          }
+        },
+        addText: function() {
+          var item = {};
+          item.text = true;
+          item.tag = 'p';
+          item.content = '';
+          this.push('post',item);
+          /*var textInput = document.createElement('paper-textarea');
+          Polymer.dom(textInput).setAttribute("id", "content" + this.index);
+          Polymer.dom(textInput).classList.add("paragraph");
+          this.$.content.appendChild(textInput);
+          this.index = this.index + 1;
+          Polymer.dom.flush();*/
+        },
+        addHeader: function() {
+          var item = {};
+          item.header = true;
+          item.tag = 'h1';
+          item.content = '';
+          this.push('post',item);
+          /*var textInput = document.createElement('paper-input');
+          Polymer.dom(textInput).setAttribute("id", "content" + this.index);
+          Polymer.dom(textInput).classList.add("header");
+          this.$.content.appendChild(textInput);
+          this.index = this.index + 1;
+          Polymer.dom.flush();*/
+        },
+        addPicture: function() {
+          var item = {};
+          item.img = true;
+          item.tag = 'img';
+          item.content = '';
+          this.push('post',item);
+          /*var pic = document.createElement('image-uploader');
+          Polymer.dom(pic).setAttribute("id", "content" + this.index);
+          Polymer.dom(pic).classList.add("picture");
+          this.$.content.appendChild(pic);
+          this.index = this.index + 1;
+          Polymer.dom.flush();*/
+        },
+        addTable: function() {
+          var table = document.createElement('paper-input');
+          Polymer.dom(table).setAttribute('id', 'content' + this.index);
+          Polymer.dom(table).classList.add('table');
+          Polymer.dom(table).setAttribute('label', 'file');
+          Polymer.dom(table).setAttribute('type', 'file');
+          this.$.content.appendChild(table);
+          this.index = this.index + 1;
+          Polymer.dom.flush();
+        }
+      });
+    })();
+  </script>
+</dom-module>
